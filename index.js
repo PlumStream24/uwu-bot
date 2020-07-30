@@ -59,6 +59,19 @@ client.on('message', message =>
     }
 )
 
+// helltaker command
+client.on('message', message =>
+	{
+		if (message.author.bot) return;
+		if (message.content == "!helltaker") {
+			let ran_num = Math.floor(Math.random() * 120) + 1;
+			message.channel.send(`Enjoy`, {
+				files: [`./helltaker/${ran_num}.jpg`]
+			});
+		}
+	}
+)
+
 
 // music command
 
@@ -77,9 +90,7 @@ client.on('message', message =>
            } else if (message.content.startsWith(`${prefix}stop`)) {
             stop(message, serverQueue);
             return;
-           } else {
-           message.channel.send('You need to enter a valid command!');
-    }
+           }
 })
 
 async function execute(message, serverQueue) {
