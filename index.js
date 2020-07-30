@@ -23,13 +23,13 @@ client.on('message', message =>
 
 client.on('message', message => {
     if (message.author.bot) return;
-    else {
+    else if (message.content.startsWith(`${prefix}uwu`)) {
         String.prototype.replaceAll = function(search, replace) {
             return this.split(search).join(replace);
         }
 
         let msg = message.content
-            .slice(0, message.content.length)
+            .slice(4, message.content.length)
             .replaceAll('l', 'w')
             .replaceAll('r', 'w')
             .replaceAll('b', 'bw')
@@ -63,7 +63,7 @@ client.on('message', message =>
 client.on('message', message =>
 	{
 		if (message.author.bot) return;
-		if (message.content == "!helltaker") {
+		if (message.content == `${prefix}helltaker`) {
 			let ran_num = Math.floor(Math.random() * 120) + 1;
 			message.channel.send(`Enjoy`, {
 				files: [`./helltaker/${ran_num}.jpg`]
