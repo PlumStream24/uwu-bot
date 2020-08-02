@@ -20,7 +20,6 @@ client.on('message', message =>
 })
 
 // uwu-fy message
-
 client.on('message', message => {
     if (message.author.bot) return;
     else if (message.content.startsWith(`${prefix}uwu`)) {
@@ -63,11 +62,19 @@ client.on('message', message =>
 client.on('message', message =>
 	{
 		if (message.author.bot) return;
+
+		let ran_num = Math.floor(Math.random() * 120) + 1;
+		const helltakerEmbed = new Discord.MessageEmbed()
+		.setColor('#ff0505')
+		.setDescription(`${message.author} is horny!`)
+		.attachFiles([`./helltaker/${ran_num}.jpg`])
+		.setImage(`attachment://${ran_num}.jpg`);
+
 		if (message.content == `${prefix}helltaker`) {
-			let ran_num = Math.floor(Math.random() * 120) + 1;
-			message.channel.send(`Enjoy`, {
+			/*message.channel.send(`Enjoy`, {
 				files: [`./helltaker/${ran_num}.jpg`]
-			});
+			});*/
+			message.channel.send(helltakerEmbed);
 		}
 	}
 )
@@ -84,30 +91,32 @@ client.on('message', message =>
         if (message.content.startsWith(`${prefix}play`)) {
             execute(message, serverQueue);
             return;
-           } else if (message.content.startsWith(`${prefix}skip`)) {
+    	} else if (message.content.startsWith(`${prefix}skip`)) {
             skip(message, serverQueue);
             return;
-           } else if (message.content.startsWith(`${prefix}stop`)) {
+        } else if (message.content.startsWith(`${prefix}stop`)) {
             stop(message, serverQueue);
-            return;
-           }
+			return;
+		}
 })
 
 async function execute(message, serverQueue) {
 	const args = message.content.split(' ');
 
-	const voiceChannel = message.member.voiceChannel;
+	const voiceChannel = message.member.voice.channel;
 	if (!voiceChannel) return message.channel.send('You need to be in a voice channel to play music!');
 	const permissions = voiceChannel.permissionsFor(message.client.user);
 	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
 		return message.channel.send('I need the permissions to join and speak in your voice channel!');
 	}
-
+	if (!args[1]) {
+		return message.channel.send('Please add url!');
+	}
     const songInfo = await ytdl.getInfo(args[1])
     
     const song = {
-		title: songInfo.title,
-		url: songInfo.video_url
+		title: songInfo.videoDetails.title,
+		url: songInfo.videoDetails.video_url
     };
 
 	if (!serverQueue) {
@@ -142,13 +151,13 @@ async function execute(message, serverQueue) {
 }
 
 function skip(message, serverQueue) {
-	if (!message.member.voiceChannel) return message.channel.send('You have to be in a voice channel to stop the music!');
+	if (!message.member.voice.channel) return message.channel.send('You have to be in a voice channel to stop the music!');
 	if (!serverQueue) return message.channel.send('There is no song that I could skip!');
 	serverQueue.connection.dispatcher.end();
 }
 
 function stop(message, serverQueue) {
-	if (!message.member.voiceChannel) return message.channel.send('You have to be in a voice channel to stop the music!');
+	if (!message.member.voice.channel) return message.channel.send('You have to be in a voice channel to stop the music!');
 	serverQueue.songs = [];
 	serverQueue.connection.dispatcher.end();
 }
@@ -162,8 +171,8 @@ function play(guild, song) {
 		return;
 	}
 
-	const dispatcher = serverQueue.connection.playStream(ytdl(song.url))
-		.on('end', () => {
+	const dispatcher = serverQueue.connection.play(ytdl(song.url))
+		.on('finish', () => {
 			console.log('Music ended!');
 			serverQueue.songs.shift();
 			play(guild, serverQueue.songs[0]);
