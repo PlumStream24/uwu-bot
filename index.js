@@ -65,17 +65,16 @@ client.on('message', message =>
 	{
 		if (message.author.bot) return;
 
-		let ran_num = Math.floor(Math.random() * 120) + 1;
-		const helltakerEmbed = new Discord.MessageEmbed()
-		.setColor('#ff0505')
-		.setDescription(`${message.author} is horny!`)
-		.attachFiles([`./helltaker/${ran_num}.jpg`])
-		.setImage(`attachment://${ran_num}.jpg`);
-
+		
 		if (message.content == `${prefix}helltaker`) {
-			/*message.channel.send(`Enjoy`, {
-				files: [`./helltaker/${ran_num}.jpg`]
-			});*/
+
+			let ran_num = Math.floor(Math.random() * 120) + 1;
+			const helltakerEmbed = new Discord.MessageEmbed()
+			.setColor('#ff0505')
+			.setDescription(`UwU ${message.author} is horny!`)
+			.attachFiles([`./helltaker/${ran_num}.jpg`])
+			.setImage(`attachment://${ran_num}.jpg`);
+
 			message.channel.send(helltakerEmbed);
 		}
 	}
@@ -202,7 +201,7 @@ function resume(message, serverQueue) {
 }
 
 function nowplaying(message, serverQueue) {
-	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
+	//if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
 	const song = serverQueue.songs[0];
 
 	let nowPlaying = new Discord.MessageEmbed()
@@ -234,6 +233,7 @@ function play(guild, song) {
 			console.error(error);
 		});
 	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
+	serverQueue.textChannel.send(`Start Playing: ${song.title}`);
 }
 
 
