@@ -106,6 +106,12 @@ client.on('message', message =>
 		} else if (message.content.startsWith(`${prefix}nowplaying`)) {
 			nowplaying(message, serverQueue);
 			return;
+		} else if (message.content.startsWith(`${prefix}queue`)) {
+			listQueue(message, serverQueue);
+			return;
+		} else if (message.content.startsWith(`${prefix}remove`)) {
+			remove(message, serverQueue);
+			return;
 		}
 })
 
@@ -201,7 +207,7 @@ function resume(message, serverQueue) {
 }
 
 function nowplaying(message, serverQueue) {
-	//if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
+	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
 	const song = serverQueue.songs[0];
 
 	let nowPlaying = new Discord.MessageEmbed()
@@ -212,6 +218,30 @@ function nowplaying(message, serverQueue) {
 	if (song.duration > 0) nowPlaying.setFooter(new Date(song.duration * 1000).toISOString().substr(11, 8));
 
 	return message.channel.send(nowPlaying);
+}
+
+function listQueue(message, serverQueue) {
+	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
+	const description = serverQueue.songs.map((song, index) => `${index + 1}. ${Discord.escapeMarkdown(song.title)}`);
+
+	let queueEmbed = new Discord.MessageEmbed()
+		.setTitle('Music Queue')
+		.setDescription(description)
+		.setColor('#F8AA2A');
+
+	message.channel.send(queueEmbed);
+}
+
+function remove(message, serverQueue) {
+	if (!serverQueue) return message.channel.send("There is no queue.").catch(console.error);
+	
+	args = message.content.slice(8, message.content.length)
+
+	if (!args.length || isNaN(args)) return message.reply(`Usage: ${prefix}remove <Queue Number>`);
+	if (!Number.isInteger(parseInt(args))) return message.reply(`Usage: ${prefix}remove <Queue Number>`);
+
+    const song = serverQueue.songs.splice(args[0] - 1, 1);
+    message.channel.send(`${message.author} removed **${song[0].title}** from the queue.`);
 }
 
 function play(guild, song) {
