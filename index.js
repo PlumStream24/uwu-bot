@@ -1,10 +1,12 @@
 const fs = require('fs')
 const Discord = require('discord.js');
-const {prefix, token, prefixm} = require('./config.json');
+const {prefix, token, prefixm, YouTubeAPIKey} = require('./config.json');
 const client = new Discord.Client();
 const ytdl = require('ytdl-core');
 const queue = new Map();
-const {getInfo} = require('ytdl-getinfo')
+const YouTubeAPI = require('simple-youtube-api');
+const youtube = new YouTubeAPI(YouTubeAPIKey);
+const {getInfo} = require('ytdl-getinfo');
 
 client.once('ready', () => {
     console.log('Ready!');
@@ -81,7 +83,6 @@ client.on('message', message =>
 
 
 // music command
-
 client.on('message', message => 
     {
         if (message.author.bot) return;
@@ -89,7 +90,7 @@ client.on('message', message =>
 
         const serverQueue = queue.get(message.guild.id);
         if (message.content.startsWith(`${prefix}play`)) {
-            execute(message, serverQueue);
+			execute(message, serverQueue);
             return;
     	} else if (message.content.startsWith(`${prefix}skip`)) {
             skip(message, serverQueue);
@@ -97,11 +98,20 @@ client.on('message', message =>
         } else if (message.content.startsWith(`${prefix}stop`)) {
             stop(message, serverQueue);
 			return;
+		} else if (message.content.startsWith(`${prefix}pause`)) {
+			pause(message, serverQueue);
+			return;
+		} else if (message.content.startsWith(`${prefix}resume`)) {
+			resume(message, serverQueue);
+			return;
+		} else if (message.content.startsWith(`${prefix}nowplaying`)) {
+			nowplaying(message, serverQueue);
+			return;
 		}
 })
 
 async function execute(message, serverQueue) {
-	const args = message.content.split(' ');
+	const args = message.content;
 
 	const voiceChannel = message.member.voice.channel;
 	if (!voiceChannel) return message.channel.send('You need to be in a voice channel to play music!');
@@ -109,10 +119,17 @@ async function execute(message, serverQueue) {
 	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
 		return message.channel.send('I need the permissions to join and speak in your voice channel!');
 	}
-	if (!args[1]) {
-		return message.channel.send('Please add url!');
+	
+	const videoPattern = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
+	let vidUrl;
+	if (!videoPattern.test(args[1])) {
+		const result = await youtube.searchVideos(args.slice(6, args.length), 1);
+		vidUrl = result[0].url;
+	} else {
+		vidUrl = args[1];
 	}
-    const songInfo = await ytdl.getInfo(args[1])
+
+    const songInfo = await ytdl.getInfo(vidUrl);
     
     const song = {
 		title: songInfo.videoDetails.title,
@@ -158,8 +175,44 @@ function skip(message, serverQueue) {
 
 function stop(message, serverQueue) {
 	if (!message.member.voice.channel) return message.channel.send('You have to be in a voice channel to stop the music!');
-	serverQueue.songs = [];
-	serverQueue.connection.dispatcher.end();
+	if (!serverQueue) {
+		return message.channel.send('There is nothing playing');
+	} else {
+		serverQueue.songs = [];
+		serverQueue.connection.dispatcher.end();
+	}
+}
+
+function pause(message, serverQueue) {
+	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
+	if (serverQueue.playing) {
+		serverQueue.playing = false;
+		serverQueue.connection.dispatcher.pause(true);
+		return serverQueue.textChannel.send(`${message.author} paused the music.`).catch(console.error);
+	}
+}
+
+function resume(message, serverQueue) {
+	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
+	if (!serverQueue.playing) {
+		serverQueue.playing = true;
+		serverQueue.connection.dispatcher.resume(true);
+		return serverQueue.textChannel.send(`${message.author} resumed the music.`).catch(console.error);
+	} else return serverQueue.textChannel.send("The queue is not paused").catch(console.error);
+}
+
+function nowplaying(message, serverQueue) {
+	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
+	const song = serverQueue.songs[0];
+
+	let nowPlaying = new Discord.MessageEmbed()
+		.setTitle("Now Playing")
+		.setDescription(`${song.title}\n${song.url}`)
+		.setTimestamp();
+
+	if (song.duration > 0) nowPlaying.setFooter(new Date(song.duration * 1000).toISOString().substr(11, 8));
+
+	return message.channel.send(nowPlaying);
 }
 
 function play(guild, song) {
