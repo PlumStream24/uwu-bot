@@ -1,12 +1,12 @@
 const fs = require('fs')
 const Discord = require('discord.js');
-const {prefix, token, prefixm, YouTubeAPIKey} = require('./config.json');
+const {prefix, token, YouTubeAPIKey} = require('./config.json');
 const client = new Discord.Client();
 const ytdl = require('ytdl-core');
 const queue = new Map();
 const YouTubeAPI = require('simple-youtube-api');
 const youtube = new YouTubeAPI(YouTubeAPIKey);
-const {getInfo} = require('ytdl-getinfo');
+//const {getInfo} = require('ytdl-getinfo');
 
 client.once('ready', () => {
     console.log('Ready!');
@@ -87,32 +87,35 @@ client.on('message', message =>
         if (message.author.bot) return;
         if (!message.content.startsWith(prefix)) return;
 
-        const serverQueue = queue.get(message.guild.id);
-        if (message.content.startsWith(`${prefix}play`)) {
-			execute(message, serverQueue);
-            return;
-    	} else if (message.content.startsWith(`${prefix}skip`)) {
-            skip(message, serverQueue);
-            return;
-        } else if (message.content.startsWith(`${prefix}stop`)) {
-            stop(message, serverQueue);
-			return;
-		} else if (message.content.startsWith(`${prefix}pause`)) {
-			pause(message, serverQueue);
-			return;
-		} else if (message.content.startsWith(`${prefix}resume`)) {
-			resume(message, serverQueue);
-			return;
-		} else if (message.content.startsWith(`${prefix}nowplaying`)) {
-			nowplaying(message, serverQueue);
-			return;
-		} else if (message.content.startsWith(`${prefix}queue`)) {
-			listQueue(message, serverQueue);
-			return;
-		} else if (message.content.startsWith(`${prefix}remove`)) {
-			remove(message, serverQueue);
-			return;
+		const serverQueue = queue.get(message.guild.id);
+
+		switch (message.content.split(' ')[0]) {
+			case `${prefix}play` :
+				execute(message, serverQueue);
+				return;
+			case `${prefix}stop` :
+				stop(message, serverQueue);
+				return;
+			case `${prefix}skip` :
+				skip(message, serverQueue);
+				return;
+			case `${prefix}pause` :
+				pause(message, serverQueue);
+				return;
+			case `${prefix}resume` :
+				resume(message, serverQueue);
+				return;
+			case `${prefix}nowplaying` || `${prefix}np`:
+				nowplaying(message, serverQueue);
+				return;
+			case `${prefix}queue` :
+				listQueue(message, serverQueue);
+				return;
+			case `${prefix}remove` :
+				remove(message, serverQueue);
+				return;
 		}
+
 })
 
 async function execute(message, serverQueue) {
@@ -138,7 +141,9 @@ async function execute(message, serverQueue) {
     
     const song = {
 		title: songInfo.videoDetails.title,
-		url: songInfo.videoDetails.video_url
+		url: songInfo.videoDetails.video_url,
+		duration : songInfo.videoDetails.lengthSeconds,
+		thumbnail : songInfo.videoDetails.thumbnail.thumbnails[0].url
     };
 
 	if (!serverQueue) {
@@ -167,7 +172,14 @@ async function execute(message, serverQueue) {
 	} else {
 		serverQueue.songs.push(song);
 		console.log(serverQueue.songs);
-		return message.channel.send(`${song.title} has been added to the queue!`);
+		const addSong = new Discord.MessageEmbed()
+			.setColor('#F8AA2A')
+			.setTitle('Queued')
+			.setDescription(`[${song.title}](${song.url})`)
+			.setThumbnail(`${song.thumbnail}`)
+			.setFooter(new Date(song.duration * 1000).toISOString().substr(11, 8));
+
+		return message.channel.send(addSong);
 	}
 
 }
@@ -175,17 +187,17 @@ async function execute(message, serverQueue) {
 function skip(message, serverQueue) {
 	if (!message.member.voice.channel) return message.channel.send('You have to be in a voice channel to stop the music!');
 	if (!serverQueue) return message.channel.send('There is no song that I could skip!');
+	message.channel.send(`${message.author} skipped the music!`);
 	serverQueue.connection.dispatcher.end();
 }
 
 function stop(message, serverQueue) {
 	if (!message.member.voice.channel) return message.channel.send('You have to be in a voice channel to stop the music!');
-	if (!serverQueue) {
-		return message.channel.send('There is nothing playing');
-	} else {
-		serverQueue.songs = [];
-		serverQueue.connection.dispatcher.end();
-	}
+	if (!serverQueue) return message.channel.send('There is nothing playing');
+	message.channel.send(`${message.author} stopped the music!`);
+	serverQueue.songs = [];
+	serverQueue.connection.dispatcher.end();
+	
 }
 
 function pause(message, serverQueue) {
@@ -210,25 +222,27 @@ function nowplaying(message, serverQueue) {
 	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
 	const song = serverQueue.songs[0];
 
-	let nowPlaying = new Discord.MessageEmbed()
-		.setTitle("Now Playing")
-		.setDescription(`${song.title}\n${song.url}`)
-		.setTimestamp();
+	const nowPlayingEmbed = new Discord.MessageEmbed()
+		.setColor('#0099ff')
+		.setAuthor('UwU-bot', 'https://cdn.discordapp.com/avatars/599469157410537485/a8a1b7c89e9ad87b64b8e5a96f6e0f77.png?size=256')
+		.setTitle(`Now Playing`)
+		.setDescription(`[${song.title}](${song.url})`)
+		.setThumbnail(`${song.thumbnail}`)
+		.setFooter(new Date(song.duration * 1000).toISOString().substr(11, 8));
 
-	if (song.duration > 0) nowPlaying.setFooter(new Date(song.duration * 1000).toISOString().substr(11, 8));
-
-	return message.channel.send(nowPlaying);
+	return message.channel.send(nowPlayingEmbed);
 }
 
 function listQueue(message, serverQueue) {
 	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
 	const description = serverQueue.songs.map((song, index) => `${index + 1}. ${Discord.escapeMarkdown(song.title)}`);
-
+	
 	let queueEmbed = new Discord.MessageEmbed()
-		.setTitle('Music Queue')
-		.setDescription(description)
-		.setColor('#F8AA2A');
-
+	.setTitle('Music Queue')
+	.setDescription(description)
+	.setColor('#F8AA2A');
+	
+	if (serverQueue.songs) return message.channel.send(queueEmbed.setDescription('Queue is empty.'));
 	message.channel.send(queueEmbed);
 }
 
@@ -256,14 +270,23 @@ function play(guild, song) {
 	const dispatcher = serverQueue.connection.play(ytdl(song.url))
 		.on('finish', () => {
 			console.log('Music ended!');
-			serverQueue.songs.shift();
 			play(guild, serverQueue.songs[0]);
 		})
 		.on('error', error => {
 			console.error(error);
 		});
 	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-	serverQueue.textChannel.send(`Start Playing: ${song.title}`);
+	serverQueue.songs.shift();
+		
+	const nowPlayingEmbed = new Discord.MessageEmbed()
+		.setColor('#0099ff')
+		.setAuthor('UwU-bot', 'https://cdn.discordapp.com/avatars/599469157410537485/a8a1b7c89e9ad87b64b8e5a96f6e0f77.png?size=256')
+		.setTitle(`Now Playing`)
+		.setDescription(`[${song.title}](${song.url})`)
+		.setThumbnail(`${song.thumbnail}`)
+		.setFooter(new Date(song.duration * 1000).toISOString().substr(11, 8));
+
+	serverQueue.textChannel.send(nowPlayingEmbed);
 }
 
 
