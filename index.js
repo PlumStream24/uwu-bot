@@ -156,7 +156,8 @@ async function execute(message, serverQueue) {
 		title: songInfo.videoDetails.title,
 		url: songInfo.videoDetails.video_url,
 		duration : songInfo.videoDetails.lengthSeconds,
-		thumbnail : songInfo.videoDetails.thumbnail.thumbnails[0].url
+		thumbnail : songInfo.videoDetails.thumbnail.thumbnails[0].url,
+		user : message.author
     };
 
 	if (!serverQueue) {
@@ -186,9 +187,10 @@ async function execute(message, serverQueue) {
 		serverQueue.songs.push(song);
 		console.log(serverQueue.songs);
 		const addSong = new Discord.MessageEmbed()
+			.setAuthor(`${song.user.username}`, `${song.user.avatarURL()}`)
 			.setColor('#F8AA2A')
 			.setTitle('Queued')
-			.setDescription(`[${song.title}](${song.url})`)
+			.setDescription(`[${song.title}](${song.url})\nQueued #${serverQueue.songs.length - 1}`)
 			.setThumbnail(`${song.thumbnail}`)
 			.setFooter(new Date(song.duration * 1000).toISOString().substr(11, 8));
 
@@ -237,7 +239,7 @@ function nowplaying(message, serverQueue) {
 
 	const nowPlayingEmbed = new Discord.MessageEmbed()
 		.setColor('#0099ff')
-		.setAuthor('UwU-bot', 'https://cdn.discordapp.com/avatars/599469157410537485/a8a1b7c89e9ad87b64b8e5a96f6e0f77.png?size=256')
+		.setAuthor(`${song.user.username}`, `${song.user.avatarURL()}`)
 		.setTitle(`Now Playing`)
 		.setDescription(`[${song.title}](${song.url})`)
 		.setThumbnail(`${song.thumbnail}`)
@@ -248,26 +250,33 @@ function nowplaying(message, serverQueue) {
 
 function listQueue(message, serverQueue) {
 	if (!serverQueue) return message.reply("There is nothing playing").catch(console.error);
-	const description = serverQueue.songs.map((song, index) => `${index + 1}. ${Discord.escapeMarkdown(song.title)}`);
+	const description = serverQueue.songs.map((song, index) => {
+		if (index == 0) {
+			return `**Now playing** : ${song.title}`;
+		} else {
+			return `${index}. ${song.title}`;
+		}
+	});
 	
 	let queueEmbed = new Discord.MessageEmbed()
-	.setTitle('Music Queue')
-	.setDescription(description)
-	.setColor('#F8AA2A');
-	
-	if (serverQueue.songs) return message.channel.send(queueEmbed.setDescription('Queue is empty.'));
+		.setAuthor(`${message.guild.name}`, `${message.guild.iconURL()}`)
+		.setTitle('Music Queue')
+		.setDescription(description)
+		.setColor('#F8AA2A');
+		
+	if (!serverQueue.songs[1]) return message.channel.send(queueEmbed.setDescription([`**Now Playing** : ${serverQueue.songs[0].title}`, 'Queue is empty.']));
 	message.channel.send(queueEmbed);
 }
 
 function remove(message, serverQueue) {
 	if (!serverQueue) return message.channel.send("There is no queue.").catch(console.error);
 	
-	args = message.content.slice(8, message.content.length)
+	args = message.content.slice(8, message.content.length);
 
 	if (!args.length || isNaN(args)) return message.reply(`Usage: ${prefix}remove <Queue Number>`);
 	if (!Number.isInteger(parseInt(args))) return message.reply(`Usage: ${prefix}remove <Queue Number>`);
 
-    const song = serverQueue.songs.splice(args[0] - 1, 1);
+    const song = serverQueue.songs.splice(args[0], 1);
     message.channel.send(`${message.author} removed **${song[0].title}** from the queue.`);
 }
 
@@ -283,17 +292,17 @@ function play(guild, song) {
 	const dispatcher = serverQueue.connection.play(ytdl(song.url))
 		.on('finish', () => {
 			console.log('Music ended!');
+			serverQueue.songs.shift();
 			play(guild, serverQueue.songs[0]);
 		})
 		.on('error', error => {
 			console.error(error);
 		});
 	dispatcher.setVolumeLogarithmic(serverQueue.volume / 5);
-	serverQueue.songs.shift();
 		
 	const nowPlayingEmbed = new Discord.MessageEmbed()
 		.setColor('#0099ff')
-		.setAuthor('UwU-bot', 'https://cdn.discordapp.com/avatars/599469157410537485/a8a1b7c89e9ad87b64b8e5a96f6e0f77.png?size=256')
+		.setAuthor(`${song.user.username}`, `${song.user.avatarURL()}`)
 		.setTitle(`Now Playing`)
 		.setDescription(`[${song.title}](${song.url})`)
 		.setThumbnail(`${song.thumbnail}`)
