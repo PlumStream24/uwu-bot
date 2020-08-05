@@ -6,7 +6,7 @@ const ytdl = require('ytdl-core');
 const queue = new Map();
 const YouTubeAPI = require('simple-youtube-api');
 const youtube = new YouTubeAPI(YouTubeAPIKey);
-//const {getInfo} = require('ytdl-getinfo');
+
 
 client.once('ready', () => {
     console.log('Ready!');
@@ -38,7 +38,8 @@ client.on('message', message => {
             .replaceAll('th', 'd')
             .replaceAll('what', 'wut')
             .replaceAll('v', 'vw')
-            .replaceAll('do', 'dew')
+			.replaceAll('do', 'dew')
+			.replaceAll('me', 'mwe')
 
         message.channel.send(`${msg} UwU`);
     }
@@ -60,6 +61,18 @@ client.on('message', message =>
     }
 )
 
+// dame da ne command
+client.on('message', message =>
+{
+	if (message.content.startsWith(`${prefix}dame`)) {
+		const pics = ['https://cdn.discordapp.com/attachments/738539670853648404/740207324357984386/EQwM36XUcAMeHDP.png', 
+			'https://cdn.discordapp.com/attachments/738539670853648404/740165480047968337/FB_IMG_1596128965327.jpg']
+		
+		message.channel.send(pics[Math.floor(Math.random() * 2)])
+	}
+})
+
+
 // helltaker command
 client.on('message', message =>
 	{
@@ -68,7 +81,7 @@ client.on('message', message =>
 		
 		if (message.content == `${prefix}helltaker`) {
 
-			let ran_num = Math.floor(Math.random() * 120) + 1;
+			let ran_num = Math.floor(Math.random() * 123) + 1;
 			const helltakerEmbed = new Discord.MessageEmbed()
 			.setColor('#ff0505')
 			.setDescription(`UwU ${message.author} is horny!`)
