@@ -1,0 +1,21 @@
+{
+  "name": "uwu-bot",
+  "version": "1.0.0",
+  "description": "My First Bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/opus": "^0.3.2",
+    "discord.js": "^12.2.0",
+    "ffmpeg": "0.0.4",
+    "ffmpeg-static": "^4.2.6",
+    "opusscript": "0.0.7",
+    "simple-youtube-api": "^5.2.1",
+    "ytdl-core": "^3.2.0",
+    "ytdl-getinfo": "^1.1.0"
+  }
+}
