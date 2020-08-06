@@ -49,7 +49,7 @@ client.on('message', message => {
 client.on('message', message =>
     {
         if (message.author.bot) return;
-        if (message.content.includes(`i'm`)) {
+        if (message.content.includes("i'm")) {
             let id = message.content.toLocaleLowerCase().indexOf(`i'm`) + 4;
             let hi = message.content.slice(id,message.content.length);
             if (hi.toLocaleLowerCase() == 'dad') {
@@ -64,11 +64,11 @@ client.on('message', message =>
 // dame da ne command
 client.on('message', message =>
 {
-	if (message.content.startsWith(`${prefix}dame`)) {
+	if (message.content.includes("dame")) {
 		const pics = ['https://cdn.discordapp.com/attachments/738539670853648404/740207324357984386/EQwM36XUcAMeHDP.png', 
-			'https://cdn.discordapp.com/attachments/738539670853648404/740165480047968337/FB_IMG_1596128965327.jpg']
+			'https://cdn.discordapp.com/attachments/738539670853648404/740165480047968337/FB_IMG_1596128965327.jpg'];
 		
-		message.channel.send(pics[Math.floor(Math.random() * 2)])
+		message.channel.send(pics[Math.floor(Math.random() * 2)]);
 	}
 })
 
@@ -127,9 +127,100 @@ client.on('message', message =>
 			case `${prefix}remove` :
 				remove(message, serverQueue);
 				return;
+			case `${prefix}playlist` :
+				executePlaylist(message, serverQueue);
+				return;
 		}
 
 })
+
+async function executePlaylist(message, serverQueue) {
+	const args = message.content;
+
+	const voiceChannel = message.member.voice.channel;
+	if (!voiceChannel) return message.channel.send('You need to be in a voice channel to play music!');
+	const permissions = voiceChannel.permissionsFor(message.client.user);
+	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
+		return message.channel.send('I need the permissions to join and speak in your voice channel!');
+	}
+	if (!args.split(' ')[1]) return message.channel.send('Usage : !play <video title / URL>');
+	
+	
+	const videoPattern = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
+	const playlistPattern = /^.*(list=)([^#\&\?]*).*/gi;
+	//if (videoPattern.test(args.slice(10,args.length))) return message.channel.send('Use !play to queue a song!');
+	
+	let song = [];
+	let playlist = null;
+	let videos = [];
+
+	//if (!playlistPattern.test(args.slice(10,args.length))) return message.channel.send('Playlist not found');
+
+	try {
+		playlist = await youtube.getPlaylist(args.slice(10,args.length));
+		videos = await playlist.getVideos();
+	} catch (error) {
+		console.error(error);
+		return message.reply("Playlist not found :(").catch(console.error);
+	}
+
+	for (let index = 0; index < videos.length; index++) {
+        let songInfo = await ytdl.getInfo(videos[index].url);
+        song.push({
+            title: videos[index].title,
+            url: videos[index].url,
+            duration : songInfo.videoDetails.lengthSeconds,
+			thumbnail : videos[index].thumbnails.default.url,
+			user : message.author
+        });
+    }
+
+	if (!serverQueue) {
+		const queueContruct = {
+			textChannel: message.channel,
+			voiceChannel: voiceChannel,
+			connection: null,
+			songs: [],
+			volume: 5,
+			playing: true,
+		};
+
+		queue.set(message.guild.id, queueContruct);
+
+		queueContruct.songs = queueContruct.songs.concat(song);
+
+		try {
+			var connection = await voiceChannel.join();
+			queueContruct.connection = connection;
+			play(message.guild, queueContruct.songs[0]);
+		} catch (err) {
+			console.log(err);
+			queue.delete(message.guild.id);
+			return message.channel.send(err);
+		}
+
+		const addPlaylist = new Discord.MessageEmbed()
+		.setAuthor(`${message.author.username}`, `${message.author.avatarURL()}`)
+		.setColor('#F8AA2A')
+		.setTitle('Queued')
+		.setDescription(`${queueContruct.songs.length} songs from [${playlist.title}](${playlist.url}) playlist`)
+		.setThumbnail(`${playlist.thumbnails.default.url}`)
+		
+		return message.channel.send(addPlaylist);
+	
+	} else {
+		serverQueue.songs = serverQueue.songs.concat(song);
+		const addPlaylist = new Discord.MessageEmbed()
+		.setAuthor(`${message.author.username}`, `${message.author.avatarURL()}`)
+		.setColor('#F8AA2A')
+		.setTitle('Queued')
+		.setDescription(`${serverQueue.songs.length} songs from [${playlist.title}](${playlist.url}) playlist`)
+		.setThumbnail(`${playlist.thumbnails.default.url}`)
+		
+		return message.channel.send(addPlaylist);
+	}
+}
+
 
 async function execute(message, serverQueue) {
 	const args = message.content;
@@ -140,25 +231,29 @@ async function execute(message, serverQueue) {
 	if (!permissions.has('CONNECT') || !permissions.has('SPEAK')) {
 		return message.channel.send('I need the permissions to join and speak in your voice channel!');
 	}
+	if (!args.split(' ')[1]) return message.channel.send('Usage : !play <video title / URL>');
 	
 	const videoPattern = /^(https?:\/\/)?(www\.)?(m\.)?(youtube\.com|youtu\.?be)\/.+$/gi;
+	const playlistPattern = /^.*(list=)([^#\&\?]*).*/gi;
+	if (playlistPattern.test(args.slice(6,args.length))) return message.channel.send('Use !playlist to queue a playlist!');
 	let vidUrl;
-	if (!videoPattern.test(args[1])) {
+		
+	if (!videoPattern.test(args.slice(6,args.length))) {
 		const result = await youtube.searchVideos(args.slice(6, args.length), 1);
 		vidUrl = result[0].url;
 	} else {
 		vidUrl = args[1];
 	}
 
-    const songInfo = await ytdl.getInfo(vidUrl);
-    
-    const song = {
+	const songInfo = await ytdl.getInfo(vidUrl);
+
+	const song = {
 		title: songInfo.videoDetails.title,
 		url: songInfo.videoDetails.video_url,
 		duration : songInfo.videoDetails.lengthSeconds,
 		thumbnail : songInfo.videoDetails.thumbnail.thumbnails[0].url,
 		user : message.author
-    };
+	};
 
 	if (!serverQueue) {
 		const queueContruct = {
