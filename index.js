@@ -8,8 +8,9 @@ const YouTubeAPI = require('simple-youtube-api');
 const youtube = new YouTubeAPI(YouTubeAPIKey);
 
 
-client.once('ready', () => {
-    console.log('Ready!');
+client.on('ready', () => {
+	console.log('Ready!');
+	client.user.setActivity('UwU',{type : 'PLAYING'});
 });
 
 
@@ -242,7 +243,7 @@ async function execute(message, serverQueue) {
 		const result = await youtube.searchVideos(args.slice(6, args.length), 1);
 		vidUrl = result[0].url;
 	} else {
-		vidUrl = args[1];
+		vidUrl = args.slice(6,args.length);
 	}
 
 	const songInfo = await ytdl.getInfo(vidUrl);
@@ -370,6 +371,7 @@ function remove(message, serverQueue) {
 
 	if (!args.length || isNaN(args)) return message.reply(`Usage: ${prefix}remove <Queue Number>`);
 	if (!Number.isInteger(parseInt(args))) return message.reply(`Usage: ${prefix}remove <Queue Number>`);
+	if (args >= serverQueue.songs.length) return message.reply("Queue doesn't exist");
 
     const song = serverQueue.songs.splice(args[0], 1);
     message.channel.send(`${message.author} removed **${song[0].title}** from the queue.`);
