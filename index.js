@@ -10,7 +10,7 @@ const youtube = new YouTubeAPI(YouTubeAPIKey);
 
 client.on('ready', () => {
 	console.log('Ready!');
-	client.user.setActivity('UwU',{type : 'PLAYING'});
+	client.user.setActivity('UwU',{type : 'LISTENING'});
 });
 
 
@@ -25,7 +25,7 @@ client.on('message', message =>
 // uwu-fy message
 client.on('message', message => {
     if (message.author.bot) return;
-    else if (message.content.startsWith(`${prefix}uwu`)) {
+    if (message.content.startsWith(`${prefix}uwu`)) {
         String.prototype.replaceAll = function(search, replace) {
             return this.split(search).join(replace);
         }
@@ -46,11 +46,33 @@ client.on('message', message => {
     }
 })
 
+// kill command
+client.on('message', message => {
+	if (message.author.bot) return;
+	if (message.content.toLowerCase().includes('kill')) {
+		const killEmbed = new Discord.MessageEmbed()
+		.setTitle(`*B A N G*`)
+		.setDescription(`<@${message.author.id}>`)
+		.setImage('https://cdn.discordapp.com/attachments/738539670853648404/740965770846273626/maxresdefault.png')
+		.setFooter('*dies*')
+		.setColor('#FF0505');
+
+		const id = message.content.split(' ').indexOf('kill') + 1;
+	
+		if (message.mentions.users.first()) killEmbed.setDescription(message.mentions.users.first());
+		else if (message.mentions.roles.first()) killEmbed.setDescription(message.mentions.roles.first());
+		else if (message.mentions.everyone) killEmbed.setDescription('@everyone');
+		else if (message.content.toLowerCase().split(' ')[id] === 'yourself') killEmbed.setImage('https://cdn.discordapp.com/attachments/738539670853648404/741185468644720690/shin-megami-tensei-persona-3-portable-wallpaper-preview.png');
+
+		return message.channel.send(killEmbed);
+	}
+})
+
 // dad command
 client.on('message', message =>
     {
         if (message.author.bot) return;
-        if (message.content.includes("i'm")) {
+        if (message.content.toLowerCase().includes("i'm")) {
             let id = message.content.toLocaleLowerCase().indexOf(`i'm`) + 4;
             let hi = message.content.slice(id,message.content.length);
             if (hi.toLocaleLowerCase() == 'dad') {
