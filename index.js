@@ -49,7 +49,9 @@ client.on('message', message => {
 // kill command
 client.on('message', message => {
 	if (message.author.bot) return;
+	
 	if (message.content.toLowerCase().includes('kill')) {
+		
 		const killEmbed = new Discord.MessageEmbed()
 		.setTitle(`*B A N G*`)
 		.setDescription(`<@${message.author.id}>`)
@@ -62,10 +64,11 @@ client.on('message', message => {
 		if (message.mentions.users.first()) killEmbed.setDescription(message.mentions.users.first());
 		else if (message.mentions.roles.first()) killEmbed.setDescription(message.mentions.roles.first());
 		else if (message.mentions.everyone) killEmbed.setDescription('@everyone');
-		else if (message.content.toLowerCase().split(' ')[id] === 'yourself') killEmbed.setImage('https://cdn.discordapp.com/attachments/738539670853648404/741185468644720690/shin-megami-tensei-persona-3-portable-wallpaper-preview.png');
+		if (message.content.toLowerCase().split(' ')[id] === 'yourself') killEmbed.setImage('https://cdn.discordapp.com/attachments/738539670853648404/741185468644720690/shin-megami-tensei-persona-3-portable-wallpaper-preview.png');
 
 		return message.channel.send(killEmbed);
 	}
+
 })
 
 // dad command
