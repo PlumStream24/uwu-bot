@@ -33,14 +33,20 @@ client.on('message', message =>
 
 // ping spam
 let interval = null;
+let userPattern = /^(<@!)(\d+)(>)$/;
 client.on('message', message => 
 {
 	if (message.content.startsWith(`${prefix}ping`)) {
+		let user = message.content.slice(6,message.content.length).split(' ')[0];
+		if (!userPattern.test(user)) {
+			return message.channel.send("Invalid command.");
+		}
+
 		if (message.author.id == '310286753363918849') {
 			if (interval == null) {
 				let count = 0;
 				interval = setInterval(function() {
-					message.channel.send(`${message.mentions.users.first()}`);
+					message.channel.send(`${user}`);
 					count++;
 					if (count >= 5)
 					{
@@ -48,7 +54,7 @@ client.on('message', message =>
 						interval = null;
 					}
 				}, 1000 * 60);
-				message.channel.send(`Pinging ${message.mentions.users.first()} every minute.`);
+				message.channel.send(`Pinging ${user} every minute for 5 minutes.`);
 			} else {
 				message.channel.send('I can only ping one at a time.');
 			}
@@ -57,7 +63,7 @@ client.on('message', message =>
 		}
 	}
 
-	if (message.content.startsWith(`${prefix}stop`) && interval != null) {
+	if (message.content.startsWith(`${prefix}stop`)) {
 		if (interval != null) {
 			clearInterval(interval);
 			interval = null;
