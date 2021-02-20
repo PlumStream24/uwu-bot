@@ -3,8 +3,10 @@ const Discord = require('discord.js');
 const {prefix, token, YouTubeAPIKey, danbooruAPI} = require('./config.json');
 const { clear } = require('console');
 const client = new Discord.Client();
-//const Danbooru = require('danbooru');
-/* Retired music command
+
+/* Retired commands
+const Danbooru = require('danbooru');
+
 const ytdl = require('ytdl-core');
 const queue = new Map();
 const YouTubeAPI = require('simple-youtube-api');
@@ -16,7 +18,7 @@ client.once('ready', () => {
 	client.user.setActivity('ZYPRESSENの花束',{type : 'LISTENING'});
 });
 
-
+// Hi!
 client.on('message', message => 
 {
     if(message.content.toLowerCase() === `hello bot` || message.content.toLowerCase() === `hi bot`) 
@@ -117,25 +119,25 @@ client.on('ready', () => {
 					}
 					break;
 				case 2 :
-					if (hour == 13 || hour == 14 || hour == 15 || hour == 16 || hour == 17) {
+					if (hour == 14 || hour == 15 || hour == 17) {
 						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
 						guild.channels.cache.get(channelid).send(reminderEmbed);
 					}
 					break;
 				case 3 :
-					if (hour == 11 || hour == 12 || hour == 13 || hour == 14 || hour == 15 || hour == 16 || hour == 17) {
+					if (hour == 12 || hour == 14 || hour == 15 || hour == 17) {
 						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
 						guild.channels.cache.get(channelid).send(reminderEmbed);
 					}
 					break;
 				case 4 :
-					if (hour == 15 || hour == 16 || hour == 17) {
+					if (hour == 15 || hour == 17) {
 						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
 						guild.channels.cache.get(channelid).send(reminderEmbed);
 					}
 					break;
 				case 5 :
-					if (hour == 13 || hour == 14 || hour == 15) {
+					if (hour == 14 || hour == 15) {
 						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
 						guild.channels.cache.get(channelid).send(reminderEmbed);
 					}
@@ -148,7 +150,76 @@ client.on('ready', () => {
 	}, 1000 * 60 * 25)
 })
 
-// danbooru command
+
+
+// kill command
+client.on('message', message => {
+	if (message.author.bot) return;
+	
+	if (message.content.toLowerCase().split(' ').includes('kill')) {
+		
+		const killEmbed = new Discord.MessageEmbed()
+		.setTitle(`*B A N G*`)
+		.setDescription(`<@${message.author.id}>`)
+		.setImage('https://cdn.discordapp.com/attachments/738539670853648404/740965770846273626/maxresdefault.png')
+		.setFooter('*dies*')
+		.setColor('#FF0505');
+		
+		const id = message.content.split(' ').indexOf('kill') + 1;
+		
+		if (message.mentions.users.first()) killEmbed.setDescription(message.mentions.users.first());
+		else if (message.mentions.roles.first()) killEmbed.setDescription(message.mentions.roles.first());
+		else if (message.mentions.everyone) killEmbed.setDescription('@everyone');
+		if (message.content.toLowerCase().split(' ')[id] === 'yourself') killEmbed.setImage('https://cdn.discordapp.com/attachments/738539670853648404/741185468644720690/shin-megami-tensei-persona-3-portable-wallpaper-preview.png');
+		
+		return message.channel.send(killEmbed);
+	}
+	
+})
+
+// dad command *deactivated*
+/*
+client.on('message', message =>
+{
+	if (message.author.bot) return;
+	if (message.content.toLowerCase().includes("i'm")) {
+		let id = message.content.toLocaleLowerCase().indexOf(`i'm`) + 4;
+		let hi = message.content.slice(id,message.content.length);
+		if (hi.toLocaleLowerCase() == 'bot') {
+			message.channel.send(`You're not bot, I'm bot`);
+		} else {
+			if (hi) {
+				message.channel.send(`Hi ${hi}, I'm bot`);
+			}
+		}
+	}
+}
+)
+*/
+
+// helltaker command
+client.on('message', message =>
+{
+	if (message.author.bot) return;
+	
+	if (message.content == `${prefix}helltaker`) {
+		if (message.channel.nsfw != true) {
+			return message.channel.send('Go to horny jail! *bonk*');
+		}
+		
+		let ran_num = Math.floor(Math.random() * 123) + 1;
+		const helltakerEmbed = new Discord.MessageEmbed()
+		.setColor('#ff0505')
+		.setDescription(`UwU ${message.author} is horny!`)
+		.attachFiles([`./helltaker/${ran_num}.jpg`])
+		.setImage(`attachment://${ran_num}.jpg`);
+		
+		message.channel.send(helltakerEmbed);
+	}
+}
+)
+
+// danbooru command *retired*
 /*
 async function BooruRequest(message) {
 	const booru = new Danbooru();
@@ -171,87 +242,6 @@ client.on('message', message => {
 	}
 })
 */
-
-
-// kill command
-client.on('message', message => {
-	if (message.author.bot) return;
-	
-	if (message.content.toLowerCase().includes('kill')) {
-		
-		const killEmbed = new Discord.MessageEmbed()
-		.setTitle(`*B A N G*`)
-		.setDescription(`<@${message.author.id}>`)
-		.setImage('https://cdn.discordapp.com/attachments/738539670853648404/740965770846273626/maxresdefault.png')
-		.setFooter('*dies*')
-		.setColor('#FF0505');
-
-		const id = message.content.split(' ').indexOf('kill') + 1;
-	
-		if (message.mentions.users.first()) killEmbed.setDescription(message.mentions.users.first());
-		else if (message.mentions.roles.first()) killEmbed.setDescription(message.mentions.roles.first());
-		else if (message.mentions.everyone) killEmbed.setDescription('@everyone');
-		if (message.content.toLowerCase().split(' ')[id] === 'yourself') killEmbed.setImage('https://cdn.discordapp.com/attachments/738539670853648404/741185468644720690/shin-megami-tensei-persona-3-portable-wallpaper-preview.png');
-
-		return message.channel.send(killEmbed);
-	}
-
-})
-
-// dad command
-/*
-client.on('message', message =>
-    {
-        if (message.author.bot) return;
-        if (message.content.toLowerCase().includes("i'm")) {
-            let id = message.content.toLocaleLowerCase().indexOf(`i'm`) + 4;
-            let hi = message.content.slice(id,message.content.length);
-            if (hi.toLocaleLowerCase() == 'bot') {
-                message.channel.send(`You're not bot, I'm bot`);
-            } else {
-				if (hi) {
-                	message.channel.send(`Hi ${hi}, I'm bot`);
-				}
-            }
-        }
-    }
-)
-*/
-
-// dame da ne command
-client.on('message', message =>
-{
-	if (message.content.includes("dame")) {
-		const pics = ['https://cdn.discordapp.com/attachments/738539670853648404/740207324357984386/EQwM36XUcAMeHDP.png', 
-			'https://cdn.discordapp.com/attachments/738539670853648404/740165480047968337/FB_IMG_1596128965327.jpg'];
-		
-		message.channel.send(pics[Math.floor(Math.random() * 2)]);
-	}
-})
-
-
-// helltaker command
-client.on('message', message =>
-	{
-		if (message.author.bot) return;
-		
-		if (message.content == `${prefix}helltaker`) {
-			if (message.channel.nsfw != true) {
-				return message.channel.send('Go to horny jail! *bonk*');
-			}
-
-			let ran_num = Math.floor(Math.random() * 123) + 1;
-			const helltakerEmbed = new Discord.MessageEmbed()
-			.setColor('#ff0505')
-			.setDescription(`UwU ${message.author} is horny!`)
-			.attachFiles([`./helltaker/${ran_num}.jpg`])
-			.setImage(`attachment://${ran_num}.jpg`);
-
-			message.channel.send(helltakerEmbed);
-		}
-	}
-)
-
 
 //  Retired music command because I couldn't keep it up
 /*
