@@ -1,6 +1,6 @@
 const fs = require('fs')
 const Discord = require('discord.js');
-const {prefix, token, YouTubeAPIKey, danbooruAPI} = require('./config.json');
+const {prefix, token, userID, guildID, channelID, YouTubeAPIKey, danbooruAPI} = require('./config.json');
 const { clear } = require('console');
 const client = new Discord.Client();
 
@@ -42,7 +42,7 @@ client.on('message', message =>
 			return message.channel.send("Invalid command.");
 		}
 
-		if (message.author.id == '310286753363918849') {
+		if (message.author.id == userID) {
 			if (interval == null) {
 				let count = 0;
 				interval = setInterval(function() {
@@ -101,8 +101,7 @@ client.on('message', message => {
 
 // Reminder
 client.on('ready', () => {
-	let guild = client.guilds.cache.get('599471555470163979');
-	let channelid = '601751285896708096';
+	let guild = client.guilds.cache.get(guildID);
 
 	setInterval(function() {
 		let time = new Date();
@@ -116,36 +115,36 @@ client.on('ready', () => {
 			.setImage(`attachment://${ran_num}.jpg`)
 			.setColor('#569187');
 
-		if(guild && guild.channels.cache.get(channelid)) {
+		if(guild && guild.channels.cache.get(channelID)) {
 			switch (day) {
 				case 1 :
 					if (hour == 13 || hour == 17) {
-						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelid).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelID).send(reminderEmbed);
 					}
 					break;
 				case 2 :
 					if (hour == 14 || hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelid).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelID).send(reminderEmbed);
 					}
 					break;
 				case 3 :
 					if (hour == 12 || hour == 14 || hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelid).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelID).send(reminderEmbed);
 					}
 					break;
 				case 4 :
 					if (hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelid).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelID).send(reminderEmbed);
 					}
 					break;
 				case 5 :
 					if (hour == 14 || hour == 15) {
-						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelid).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelID).send(reminderEmbed);
 					}
 					break;
 				default :
@@ -176,7 +175,6 @@ client.on('message', message => {
 		if (message.mentions.users.first()) killEmbed.setDescription(message.mentions.users.first());
 		else if (message.mentions.roles.first()) killEmbed.setDescription(message.mentions.roles.first());
 		else if (message.mentions.everyone) killEmbed.setDescription('@everyone');
-		if (message.content.toLowerCase().split(' ')[id] === 'yourself') killEmbed.setImage('https://cdn.discordapp.com/attachments/738539670853648404/741185468644720690/shin-megami-tensei-persona-3-portable-wallpaper-preview.png');
 		
 		return message.channel.send(killEmbed);
 	}
