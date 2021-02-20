@@ -1,25 +1,70 @@
 const fs = require('fs')
 const Discord = require('discord.js');
-const {prefix, token, YouTubeAPIKey} = require('./config.json');
+const {prefix, token, YouTubeAPIKey, danbooruAPI} = require('./config.json');
+const { clear } = require('console');
 const client = new Discord.Client();
+//const Danbooru = require('danbooru');
+/* Retired music command
 const ytdl = require('ytdl-core');
 const queue = new Map();
 const YouTubeAPI = require('simple-youtube-api');
 const youtube = new YouTubeAPI(YouTubeAPIKey);
+*/
 
-
-client.on('ready', () => {
+client.once('ready', () => {
 	console.log('Ready!');
-	client.user.setActivity('UwU',{type : 'LISTENING'});
+	client.user.setActivity('ZYPRESSENの花束',{type : 'LISTENING'});
 });
 
 
 client.on('message', message => 
 {
-    if(message.content === `${prefix}ping`) 
+    if(message.content.toLowerCase() === `hello bot` || message.content.toLowerCase() === `hi bot`) 
     {
-        message.channel.send('Pong!');
+		if (Math.random() < 0.5) {
+        	message.channel.send('Hewwo!');
+		} else {
+			message.channel.send('Hi!');
+		}
     }
+})
+
+// ping spam
+let interval = null;
+client.on('message', message => 
+{
+	if (message.content.startsWith(`${prefix}ping`)) {
+		if (message.author.id == '310286753363918849') {
+			if (interval == null) {
+				let count = 0;
+				interval = setInterval(function() {
+					message.channel.send(`${message.mentions.users.first()}`);
+					count++;
+					if (count >= 5)
+					{
+						clearInterval(interval);
+						interval = null;
+					}
+				}, 1000 * 60);
+				message.channel.send(`Pinging ${message.mentions.users.first()} every minute.`);
+			} else {
+				message.channel.send('I can only ping one at a time.');
+			}
+		} else {
+			message.channel.send('You lack the privilege.');
+		}
+	}
+
+	if (message.content.startsWith(`${prefix}stop`) && interval != null) {
+		if (interval != null) {
+			clearInterval(interval);
+			interval = null;
+			message.channel.send('Stopping...');
+		} else {
+			message.channel.send("I'm not doing anything...");
+		}
+	}
+	
 })
 
 // uwu-fy message
@@ -45,6 +90,88 @@ client.on('message', message => {
         message.channel.send(`${msg} UwU`);
     }
 })
+
+// Reminder
+client.on('ready', () => {
+	let guild = client.guilds.cache.get('599471555470163979');
+	let channelid = '601751285896708096';
+
+	setInterval(function() {
+		let time = new Date();
+		let day = time.getDay();
+		let hour = time.getHours();
+		let ran_num = Math.floor(Math.random() * 10) + 1;
+		const reminderEmbed = new Discord.MessageEmbed()
+			.setTitle(`IT IS TIME FOR YOU TO ABSEN SIR`)
+			.setDescription(`<@310286753363918849>`)
+			.attachFiles([`./random/${ran_num}.jpg`])
+			.setImage(`attachment://${ran_num}.jpg`)
+			.setColor('#569187');
+
+		if(guild && guild.channels.cache.get(channelid)) {
+			switch (day) {
+				case 1 :
+					if (hour == 13 || hour == 17) {
+						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelid).send(reminderEmbed);
+					}
+					break;
+				case 2 :
+					if (hour == 13 || hour == 14 || hour == 15 || hour == 16 || hour == 17) {
+						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelid).send(reminderEmbed);
+					}
+					break;
+				case 3 :
+					if (hour == 11 || hour == 12 || hour == 13 || hour == 14 || hour == 15 || hour == 16 || hour == 17) {
+						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelid).send(reminderEmbed);
+					}
+					break;
+				case 4 :
+					if (hour == 15 || hour == 16 || hour == 17) {
+						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelid).send(reminderEmbed);
+					}
+					break;
+				case 5 :
+					if (hour == 13 || hour == 14 || hour == 15) {
+						guild.channels.cache.get(channelid).send(`<@310286753363918849>`);
+						guild.channels.cache.get(channelid).send(reminderEmbed);
+					}
+					break;
+				default :
+					//none
+					break;
+			}
+		}
+	}, 1000 * 60 * 25)
+})
+
+// danbooru command
+/*
+async function BooruRequest(message) {
+	const booru = new Danbooru();
+	const posts = await booru.posts({tags: 'order:rank', limit:100});
+	const index = Math.floor(Math.random() * posts.length)
+	const post = posts[index]
+	const booruEmbed = new Discord.MessageEmbed()
+		.setTitle("Booru!")
+		.setImage(`${post.file_url}`)
+		.setColor('0e733b');
+	message.channel.send(booruEmbed);
+	//message.channel.send(posts.length);
+}
+
+client.on('message', message => {
+	if (message.author.bot) return;
+
+	if (message.content.startsWith(`${prefix}booru`)) {
+		BooruRequest(message);
+	}
+})
+*/
+
 
 // kill command
 client.on('message', message => {
@@ -72,20 +199,24 @@ client.on('message', message => {
 })
 
 // dad command
+/*
 client.on('message', message =>
     {
         if (message.author.bot) return;
         if (message.content.toLowerCase().includes("i'm")) {
             let id = message.content.toLocaleLowerCase().indexOf(`i'm`) + 4;
             let hi = message.content.slice(id,message.content.length);
-            if (hi.toLocaleLowerCase() == 'dad') {
-                message.channel.send(`You're not dad, I'm dad`);
+            if (hi.toLocaleLowerCase() == 'bot') {
+                message.channel.send(`You're not bot, I'm bot`);
             } else {
-                message.channel.send(`Hi ${hi}, I'm dad`);
+				if (hi) {
+                	message.channel.send(`Hi ${hi}, I'm bot`);
+				}
             }
         }
     }
 )
+*/
 
 // dame da ne command
 client.on('message', message =>
@@ -103,9 +234,11 @@ client.on('message', message =>
 client.on('message', message =>
 	{
 		if (message.author.bot) return;
-
 		
 		if (message.content == `${prefix}helltaker`) {
+			if (message.channel.nsfw != true) {
+				return message.channel.send('Go to horny jail! *bonk*');
+			}
 
 			let ran_num = Math.floor(Math.random() * 123) + 1;
 			const helltakerEmbed = new Discord.MessageEmbed()
@@ -120,6 +253,8 @@ client.on('message', message =>
 )
 
 
+//  Retired music command because I couldn't keep it up
+/*
 // music command
 client.on('message', message => 
     {
@@ -159,6 +294,7 @@ client.on('message', message =>
 		}
 
 })
+*/
 
 async function executePlaylist(message, serverQueue) {
 	const args = message.content;
@@ -433,5 +569,6 @@ function play(guild, song) {
 	serverQueue.textChannel.send(nowPlayingEmbed);
 }
 
+// End of retired music command
 
 client.login(token);

@@ -1,12 +1,12 @@
 {
   "name": "uwu-bot",
   "version": "1.0.0",
-  "description": "My First Bot",
+  "description": "My Random UwU bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "PlumStream24",
   "license": "ISC",
   "dependencies": {
     "@discordjs/opus": "^0.3.2",
