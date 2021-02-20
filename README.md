@@ -1,7 +1,7 @@
 # UwU-bot
 
 My random UwU bot. <br>
-Just a bot I made during my free time for messing around on my discord server. <br>
+Just a discord bot I made during my free time for messing around on my discord server. <br>
 Obviously not perfect, I'm just a college student and never formally learn JavaScript.
 
 
