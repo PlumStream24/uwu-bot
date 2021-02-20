@@ -1,7 +1,7 @@
 # UwU-bot
 
 My random UwU bot. <br>
-Just a bot i made in my free time to mess around on my discord server. <br>
+Just a bot I made during my free time for messing around on my discord server. <br>
 Obviously not perfect, I'm just a college student and never formally learn JavaScript.
 
 
@@ -11,7 +11,7 @@ Disclaimer : I don't guarantee these commands will work on every computer.
 
 * ### Hi Bot / Hello Bot
 
-  Just say hi to the bot and it will repond back with `Hi!` or `Hewwo!`. <br>
+  Just say `hi bot` or `hello bot` and it will repond back with `Hi!` or `Hewwo!`. <br>
   Used for testing whether the bot is active or not.
 
 * ### Ping Spam
