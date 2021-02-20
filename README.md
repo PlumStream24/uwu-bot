@@ -40,7 +40,7 @@ Disclaimer : I don't guarantee these commands will work on every computer.
 
 * ### Reminder
   It's just my reminder for filling the attendance log on my online class. <br>
-  It's jangky.
+  It's janky.
   
 * ### Retired Music Command
   Because there's too many error. <br>
