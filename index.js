@@ -1,7 +1,6 @@
 const fs = require('fs')
 const Discord = require('discord.js');
 const {prefix, token, userID, guildID, channelID, YouTubeAPIKey, danbooruAPI} = require('./config.json');
-const { clear } = require('console');
 const client = new Discord.Client();
 
 /* Retired commands
@@ -31,15 +30,51 @@ client.on('message', message =>
     }
 })
 
+// help
+client.on('message', message => {
+	if (message.author.bot) return;
+
+	if (message.content.startsWith('!help')) {
+		let helpEmbed = new Discord.MessageEmbed()
+			.setTitle('Command List')
+			.setAuthor(client.user.username, client.user.avatarURL())
+			.setColor('#569187')
+			.setDescription('\u200B')
+			.addFields(
+				{ name: '• Hi bot or Hello bot', value: 'Returns `Hi!` or `Hewwo!`'},
+				{ name: '• !ping `<user mention>` `<interval>` `<count>`', value: 'Ping the mentioned user every `<interval>` minutes for `<count>` times'},
+				{ name: '• !stop', value: 'Stop ping spam'},
+				{ name: '• !RemindMe `<time>` `<message>`', value: 'Remind the message author in `<time>` minutes'},
+				{ name: '• !uwu `<message>`', value: 'Will uwu-fy the message'},
+				{ name: '• !helltaker', value: 'Returns a random helltaker art'}
+			);
+		
+		client.users.fetch(userID).then(user => {
+			helpEmbed.setFooter('Made by PlumStream24', `${user.avatarURL()}`);
+			message.channel.send(helpEmbed);
+		});
+	}
+})
+
 // ping spam
 let interval = null;
-let userPattern = /^(<@!)(\d+)(>)$/;
+const userPattern = /^(<@!)(\d+)(>)$/;
 client.on('message', message => 
 {
+	if (message.author.bot) return;
+
 	if (message.content.startsWith(`${prefix}ping`)) {
-		let user = message.content.slice(6,message.content.length).split(' ')[0];
-		if (!userPattern.test(user)) {
-			return message.channel.send("Invalid command.");
+		const spltMsg = message.content.split(' ');
+		const user = spltMsg[1];
+		let minutes = spltMsg[2];
+		let num = spltMsg[3];
+		if (!userPattern.test(user)) return message.channel.send("Invalid command.");
+		
+		if (minutes < 1 || minutes == undefined || isNaN(minutes)) {
+			minutes = 1;
+		}
+		if (num < 1 || num == undefined || isNaN(num)) {
+			num = 1;
 		}
 
 		if (message.author.id == userID) {
@@ -48,13 +83,14 @@ client.on('message', message =>
 				interval = setInterval(function() {
 					message.channel.send(`${user}`);
 					count++;
-					if (count >= 5)
+					if (count >= num)
 					{
 						clearInterval(interval);
 						interval = null;
 					}
-				}, 1000 * 60);
-				message.channel.send(`Pinging ${user} every minute for 5 minutes.`);
+				}, 1000 * 60 * minutes);
+
+				message.channel.send(`Pinging ${user} every ${minutes} minute${(minutes===1?'':'s')} for ${num} time${(num===1?'':'s')}.`);
 			} else {
 				message.channel.send('I can only ping one at a time.');
 			}
@@ -74,6 +110,26 @@ client.on('message', message =>
 	}
 	
 })
+
+// remindme command
+client.on('message', message => {
+	if (message.author.bot) return;
+	if (message.content.startsWith(`${prefix}RemindMe`)) {
+		const author = message.author.id;
+		const spltMsg = message.content.split(' ');
+		let minutes = spltMsg[1];
+		let msg = spltMsg.slice(2,).join(' ');
+		if (isNaN(minutes)) return message.channel.send("Invalid command.");
+		if (minutes == undefined || minutes < 1) {
+			minutes = 1;
+		}
+		message.channel.send(`Reminder set in ${minutes} minute${(minutes===1?'':'s')}`);
+		setTimeout(function() {
+			message.channel.send(`<@!${author}> ${msg}`);
+		}, 1000 * 60 * minutes);
+	}
+})
+
 
 // uwu-fy message
 client.on('message', message => {
