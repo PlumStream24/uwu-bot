@@ -12,7 +12,7 @@ Disclaimer : I don't guarantee these commands will work on every computer.
 
 * ### Hi Bot / Hello Bot
 
-  Just say hi to the bot and it will repond back with `Hi!` or `Hewwo!`. <br>
+  Just say `hi bot` or `hello bot` and it will repond back with `Hi!` or `Hewwo!`. <br>
   Used for testing whether the bot is active or not.
 
 * ### Command List
