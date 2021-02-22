@@ -174,7 +174,7 @@ client.on('ready', () => {
 		if(guild && guild.channels.cache.get(channelID)) {
 			switch (day) {
 				case 1 :
-					if (hour == 13 || hour == 17) {
+					if (hour == 13 || hour == 16) {
 						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
 						guild.channels.cache.get(channelID).send(reminderEmbed);
 					}
