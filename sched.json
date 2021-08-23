@@ -1,0 +1,79 @@
+{
+    "Monday" : [
+        {
+            "code" : "IF3170",
+            "subj" : "Artificial Intelligence",
+            "startTime" : 7,
+            "endTime" : 9
+        },
+        {
+            "code" : "IF3151",
+            "subj" : "Human and Computer Interaction",
+            "startTime" : 9,
+            "endTime" : 11
+        }
+    ],
+    "Tuesday" : [
+        {
+            "code" : "IF3110",
+            "subj" : "Web Development",
+            "startTime" : 7,
+            "endTime" : 9
+        },
+        {
+            "code" : "IF3130",
+            "subj" : "Computer Network",
+            "startTime" : 9,
+            "endTime" : 10
+        }
+    ],
+    "Wednesday" : [
+        {
+            "code" : "IF3151",
+            "subj" : "Human and Computer Interaction",
+            "startTime" : 7,
+            "endTime" : 8
+        },
+        {
+            "code" : "IF3170",
+            "subj" : "Artificial Intelligence",
+            "startTime" : 8,
+            "endTime" : 9
+        },
+        {
+            "code" : "IF3141",
+            "subj" : "Information System",
+            "startTime" : 9,
+            "endTime" : 11
+        }
+    ],
+    "Thursday" : [
+        {
+            "code" : "IF3130",
+            "subj" : "Computer Network",
+            "startTime" : 7,
+            "endTime" : 9
+        },
+        {
+            "code" : "IF3140",
+            "subj" : "Database Management",
+            "startTime" : 9,
+            "endTime" : 11
+        }
+    ],
+    "Friday" : [
+        {
+            "code" : "IF3141",
+            "subj" : "Information System",
+            "startTime" : 7,
+            "endTime" : 8
+        },
+        {
+            "code" : "IF3150",
+            "subj" : "Managemen Proyek Perangkat Lunak",
+            "startTime" : 8,
+            "endTime" : 10
+        }
+    ],
+    "numToDay" : {"0" : "Sunday", "1" : "Monday", "2" : "Tuesday", "3" : "Wednesday", "4" : "Thrusday", "5" : "Friday", "6" : "Saturday"}
+}

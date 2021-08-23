@@ -2,6 +2,7 @@ const fs = require('fs')
 const Discord = require('discord.js');
 const sched = require('./sched.json');
 const {prefix, token, userID, guildID, channelID, YouTubeAPIKey, danbooruAPI} = require('./config.json');
+const { exception } = require('console');
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 /* Retired commands
@@ -17,6 +18,23 @@ client.once('ready', () => {
 	client.user.setActivity('Evangelion 3.0+1.0',{type : 'WATCHING'});
 });
 
+//set status
+client.on('messageCreate', message =>
+{
+	if (message.author.bot) return;
+	if (message.content.startsWith(`${prefix}status`)) {
+		if (message.author.id != userID) return;
+		
+		const msg = message.content.split(' ');
+		
+		const status = ['PLAYING', 'STREAMING', 'LISTENING', 'WATCHING', 'COMPETING',]
+
+		if (!status.includes(msg[1].toUpperCase())) return;
+
+		client.user.setActivity(msg.slice(2,).join(' '), {type : msg[1].toUpperCase()});
+	}
+})
+
 // Hi!
 client.on('messageCreate', message => 
 {
@@ -28,6 +46,15 @@ client.on('messageCreate', message =>
 			message.channel.send('Hi!');
 		}
     }
+})
+
+// headpat
+client.on('messageCreate', message =>
+{
+	if (message.author.bot) return;
+	if (message.content.toLowerCase() == '*headpats*') {
+		message.channel.send("乁(✿ ͡◠ ͜ ͡◠)و Yay, headpats!");
+	}
 })
 
 // help
@@ -184,8 +211,46 @@ client.on('ready', () => {
 	}, 1000 * 60 * 1)
 })
 
+// get random pict from folder
+client.on('messageCreate', message => {
+	if (message.author.bot) return;
+
+	if (message.content.startsWith(`${prefix}random`)) {
+		let int = message.content.split(' ')[1];
+		if (isNaN(int)) {
+			int = Math.floor(Math.random() * 18) + 1;
+		}
+		try {
+			fs.readFileSync(`./random/${int}.jpg`);
+			message.channel.send({files : [`./random/${int}.jpg`]});
+		} catch(err) {
+			message.channel.send('Wrong index');
+		}
+		
+	}
+	
+	if (message.content.startsWith(`${prefix}e`)) {
+		const msg = message.content.split(' ');
+		
+		let array = ``;
+		for (let i = 1; i < msg.length; i++) {
+			let emoji = client.emojis.cache.find(emoji => emoji.name === msg[i]);
+			if (emoji != undefined) {
+				array += ` ${emoji}`;
+			} else {
+				array += ` ${msg[i]}`;
+			}
+		}
+		if (array != '') {
+			message.channel.send(`${array}`);
+			message.delete();
+		}
+	}
+
+})
 
 // kill command
+/*
 client.on('messageCreate', message => {
 	if (message.author.bot) return;
 	
@@ -208,6 +273,7 @@ client.on('messageCreate', message => {
 	}
 	
 })
+*/
 
 // dad command *deactivated*
 /*
