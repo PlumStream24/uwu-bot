@@ -1,6 +1,7 @@
 const fs = require('fs')
 const Discord = require('discord.js');
 const {prefix, token, userID, guildID, channelID, YouTubeAPIKey, danbooruAPI} = require('./config.json');
+const { exception } = require('console');
 const client = new Discord.Client();
 
 /* Retired commands
@@ -14,8 +15,24 @@ const youtube = new YouTubeAPI(YouTubeAPIKey);
 
 client.once('ready', () => {
 	console.log('Ready!');
-	client.user.setActivity('ZYPRESSENの花束',{type : 'LISTENING'});
 });
+
+//set status
+client.on('message', message =>
+{
+	if (message.author.bot) return;
+	if (message.content.startsWith(`${prefix}status`)) {
+		if (message.author.id != userID) return;
+		
+		const msg = message.content.split(' ');
+		
+		const status = ['PLAYING', 'STREAMING', 'LISTENING', 'WATCHING', 'COMPETING',]
+
+		if (!status.includes(msg[1].toUpperCase())) return;
+
+		client.user.setActivity(msg.slice(2,).join(' '), {type : msg[1].toUpperCase()});
+	}
+})
 
 // Hi!
 client.on('message', message => 
@@ -28,6 +45,15 @@ client.on('message', message =>
 			message.channel.send('Hi!');
 		}
     }
+})
+
+// headpat
+client.on('message', message =>
+{
+	if (message.author.bot) return;
+	if (message.content.toLowerCase() == '*headpats*') {
+		message.channel.send("乁(✿ ͡◠ ͜ ͡◠)و Yay, headpats!");
+	}
 })
 
 // help
@@ -163,8 +189,8 @@ client.on('ready', () => {
 		let time = new Date();
 		let day = time.getDay();
 		let hour = time.getHours();
-		let ran_num = Math.floor(Math.random() * 10) + 1;
-		const reminderEmbed = new Discord.MessageEmbed()
+		let ran_num = Math.floor(Math.random() * 11) + 1;
+		let reminderEmbed = new Discord.MessageEmbed()
 			.setTitle(`IT IS TIME FOR YOU TO ABSEN SIR`)
 			.setDescription(`<@310286753363918849>`)
 			.attachFiles([`./random/${ran_num}.jpg`])
@@ -175,45 +201,82 @@ client.on('ready', () => {
 			switch (day) {
 				case 1 :
 					if (hour == 13 || hour == 16) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`, reminderEmbed);
 					}
 					break;
 				case 2 :
 					if (hour == 14 || hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`, reminderEmbed);
 					}
 					break;
 				case 3 :
 					if (hour == 12 || hour == 14 || hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`, reminderEmbed);
 					}
 					break;
 				case 4 :
 					if (hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`, reminderEmbed);
 					}
 					break;
 				case 5 :
 					if (hour == 14 || hour == 15) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`, reminderEmbed);
 					}
 					break;
+				case 6 :
+					if (hour == 15) {
+						reminderEmbed.setTitle("Don't forget about mentoring and amyau");
+						guild.channels.cache.get(channelID).send(`<@310286753363918849>`, reminderEmbed);
+					}
 				default :
 					//none
 					break;
 			}
 		}
-	}, 1000 * 60 * 25)
+	}, 1000 * 60 * 30)
 })
 
+// get random pict from folder
+client.on('message', message => {
+	if (message.author.bot) return;
 
+	if (message.content.startsWith(`${prefix}random`)) {
+		let int = message.content.split(' ')[1];
+		if (isNaN(int)) {
+			int = Math.floor(Math.random() * 18) + 1;
+		}
+		try {
+			fs.readFileSync(`./random/${int}.jpg`);
+			message.channel.send({files : [`./random/${int}.jpg`]});
+		} catch(err) {
+			message.channel.send('Wrong index');
+		}
+		
+	}
+	
+	if (message.content.startsWith(`${prefix}e`)) {
+		const msg = message.content.split(' ');
+		
+		let array = ``;
+		for (let i = 1; i < msg.length; i++) {
+			let emoji = client.emojis.cache.find(emoji => emoji.name === msg[i]);
+			if (emoji != undefined) {
+				array += ` ${emoji}`;
+			} else {
+				array += ` ${msg[i]}`;
+			}
+		}
+		if (array != '') {
+			message.channel.send(`${array}`);
+			message.delete();
+		}
+	}
+
+})
 
 // kill command
+/*
 client.on('message', message => {
 	if (message.author.bot) return;
 	
@@ -236,6 +299,7 @@ client.on('message', message => {
 	}
 	
 })
+*/
 
 // dad command *deactivated*
 /*
