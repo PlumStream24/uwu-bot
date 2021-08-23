@@ -1,11 +1,11 @@
 const fs = require('fs')
 const Discord = require('discord.js');
+const sched = require('./sched.json');
 const {prefix, token, userID, guildID, channelID, YouTubeAPIKey, danbooruAPI} = require('./config.json');
-const client = new Discord.Client();
+const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
 
 /* Retired commands
 const Danbooru = require('danbooru');
-
 const ytdl = require('ytdl-core');
 const queue = new Map();
 const YouTubeAPI = require('simple-youtube-api');
@@ -14,11 +14,11 @@ const youtube = new YouTubeAPI(YouTubeAPIKey);
 
 client.once('ready', () => {
 	console.log('Ready!');
-	client.user.setActivity('ZYPRESSENの花束',{type : 'LISTENING'});
+	client.user.setActivity('Evangelion 3.0+1.0',{type : 'WATCHING'});
 });
 
 // Hi!
-client.on('message', message => 
+client.on('messageCreate', message => 
 {
     if(message.content.toLowerCase() === `hello bot` || message.content.toLowerCase() === `hi bot`) 
     {
@@ -31,7 +31,7 @@ client.on('message', message =>
 })
 
 // help
-client.on('message', message => {
+client.on('messageCreate', message => {
 	if (message.author.bot) return;
 
 	if (message.content.startsWith('!help')) {
@@ -59,7 +59,7 @@ client.on('message', message => {
 // ping spam
 let interval = null;
 const userPattern = /^(<@!)(\d+)(>)$/;
-client.on('message', message => 
+client.on('messageCreate', message => 
 {
 	if (message.author.bot) return;
 
@@ -112,7 +112,7 @@ client.on('message', message =>
 })
 
 // remindme command
-client.on('message', message => {
+client.on('messageCreate', message => {
 	if (message.author.bot) return;
 	if (message.content.startsWith(`${prefix}RemindMe`)) {
 		const author = message.author.id;
@@ -132,7 +132,7 @@ client.on('message', message => {
 
 
 // uwu-fy message
-client.on('message', message => {
+client.on('messageCreate', message => {
     if (message.author.bot) return;
     if (message.content.startsWith(`${prefix}uwu`)) {
         String.prototype.replaceAll = function(search, replace) {
@@ -161,60 +161,32 @@ client.on('ready', () => {
 
 	setInterval(function() {
 		let time = new Date();
-		let day = time.getDay();
+		let numday = time.getDay();
 		let hour = time.getHours();
 		let ran_num = Math.floor(Math.random() * 10) + 1;
 		const reminderEmbed = new Discord.MessageEmbed()
-			.setTitle(`IT IS TIME FOR YOU TO ABSEN SIR`)
-			.setDescription(`<@310286753363918849>`)
-			.attachFiles([`./random/${ran_num}.jpg`])
-			.setImage(`attachment://${ran_num}.jpg`)
 			.setColor('#569187');
 
 		if(guild && guild.channels.cache.get(channelID)) {
-			switch (day) {
-				case 1 :
-					if (hour == 13 || hour == 16) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
-					}
+
+			let day = sched.numToDay[numday];
+			let idx;
+			for (let i = 0; i < sched[day].length; i++) {
+				if (sched[day][i].startTime <= hour && hour < sched[day][i].endTime) {
+					idx = i;
 					break;
-				case 2 :
-					if (hour == 14 || hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
-					}
-					break;
-				case 3 :
-					if (hour == 12 || hour == 14 || hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
-					}
-					break;
-				case 4 :
-					if (hour == 15 || hour == 17) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
-					}
-					break;
-				case 5 :
-					if (hour == 14 || hour == 15) {
-						guild.channels.cache.get(channelID).send(`<@310286753363918849>`);
-						guild.channels.cache.get(channelID).send(reminderEmbed);
-					}
-					break;
-				default :
-					//none
-					break;
+				}
 			}
+			reminderEmbed.setTitle(`Absen for ${sched[day][idx].code} - ${sched[day][idx].subj}`)
+			guild.channels.cache.get(channelID).send({content: `<@${userID}>`, embeds: [reminderEmbed]});
+			
 		}
-	}, 1000 * 60 * 25)
+	}, 1000 * 60 * 1)
 })
 
 
-
 // kill command
-client.on('message', message => {
+client.on('messageCreate', message => {
 	if (message.author.bot) return;
 	
 	if (message.content.toLowerCase().split(' ').includes('kill')) {
@@ -239,7 +211,7 @@ client.on('message', message => {
 
 // dad command *deactivated*
 /*
-client.on('message', message =>
+client.on('messageCreate', message =>
 {
 	if (message.author.bot) return;
 	if (message.content.toLowerCase().includes("i'm")) {
@@ -258,7 +230,7 @@ client.on('message', message =>
 */
 
 // helltaker command
-client.on('message', message =>
+client.on('messageCreate', message =>
 {
 	if (message.author.bot) return;
 	
@@ -294,7 +266,7 @@ async function BooruRequest(message) {
 	//message.channel.send(posts.length);
 }
 
-client.on('message', message => {
+client.on('messageCreate', message => {
 	if (message.author.bot) return;
 
 	if (message.content.startsWith(`${prefix}booru`)) {
@@ -306,7 +278,7 @@ client.on('message', message => {
 //  Retired music command because I couldn't keep it up
 /*
 // music command
-client.on('message', message => 
+client.on('messageCreate', message => 
     {
         if (message.author.bot) return;
         if (!message.content.startsWith(prefix)) return;
