@@ -179,12 +179,17 @@ client.on('ready', () => {
 				if (sched[day][i].startTime <= hour && hour < sched[day][i].endTime) {
 					idx = i;
 					break;
+				} else {
+					idx = null;
+					break;
 				}
 			}
-			reminderEmbed.setTitle(`Absen for ${sched[day][idx].code} - ${sched[day][idx].subj}`)
-			reminderEmbed.setImage('https://tenor.com/view/yorimoi-sora-yori-kimari-eyes-smile-gif-16312918')
-
-			guild.channels.cache.get(channelID).send({content: `<@${userID}>`, embeds: [reminderEmbed]});
+			if (idx != null) {
+				reminderEmbed.setTitle(`Absen for ${sched[day][idx].code} - ${sched[day][idx].subj}`)
+				reminderEmbed.setImage('https://tenor.com/view/yorimoi-sora-yori-kimari-eyes-smile-gif-16312918')
+				
+				guild.channels.cache.get(channelID).send({content: `<@${userID}>`, embeds: [reminderEmbed]});
+			}
 			
 		}
 	}, 1000 * 60 * 40)
