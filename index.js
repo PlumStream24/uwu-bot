@@ -165,6 +165,7 @@ client.on('ready', () => {
 
 	setInterval(function() {
 		let time = new Date();
+		time.setTime(time.getTime() + (7*60*60*1000))
 		let numday = time.getDay();
 		let hour = time.getHours();
 		let ran_num = Math.floor(Math.random() * 10) + 1;
