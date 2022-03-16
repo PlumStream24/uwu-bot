@@ -1,21 +1,23 @@
 {
   "name": "uwu-bot",
   "version": "1.0.0",
-  "description": "My random discord bot UwU",
+  "description": "My random discord bot UwU. <br>\r Just a bot i made in my free time to mess around on my discord server. <br>\r Obviously not perfect, I'm just a college student and never formally learn JavaScript. <br>\r Feel free to use it as a reference for you own bot! <br>",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "PlumStream24",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PlumStream24/uwu-bot.git"
+  },
+  "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PlumStream24/uwu-bot/issues"
+  },
+  "homepage": "https://github.com/PlumStream24/uwu-bot#readme",
   "dependencies": {
-    "@discordjs/opus": "^0.3.2",
-    "discord.js": "^13.1.0",
-    "ffmpeg": "0.0.4",
-    "ffmpeg-static": "^4.2.6",
-    "opusscript": "0.0.7",
-    "simple-youtube-api": "^5.2.1",
-    "ytdl-core": "^3.2.0",
-    "ytdl-getinfo": "^1.1.0"
+    "@discordjs/opus": "^0.7.0",
+    "discord.js": "^13.6.0"
   }
 }
