@@ -1,4 +1,3 @@
-const fs = require('fs')
 const Discord = require('discord.js');
 const sched = require('./sched.json');
 const {prefix, token, userID, guildID, channelID, danbooruAPI} = require('./config.json');
@@ -54,7 +53,7 @@ client.on('messageCreate', message => {
 				{ name: '• !RemindMe `<time>` `<message>`', value: 'Remind the message author in `<time>` minutes'},
 				{ name: '• !uwu `<message>`', value: 'Will uwu-fy the message'},
 			)
-			.addField('','');
+			.addField('\u200b','\u200b');
 		
 		client.users.fetch(userID).then(user => {
 			helpEmbed.setFooter({ text : 'Made by PlumStream24', iconURL : user.avatarURL()});
