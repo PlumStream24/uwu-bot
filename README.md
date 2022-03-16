@@ -34,27 +34,6 @@ Disclaimer : I don't guarantee these commands will work on every computer.
   Will uwu-fy the message, just try it. <br>
   Also it's not perfect.
   
-* ### Kill
-  Works everytime there's a word `kill` on the channel. <br>
-  Will send and image of Matsumoto from Wataten.
-
-* ### Dad
-  Works everytime there's a word `i'm` on the channel. <br>
-  Will send `Hi <message>, I'm bot`
-
-
-* ### Helltaker
-  Command : `!helltaker`. <br>
-  Will send a random image from helltaker folder. <br>
-  It's not in this repo because of nsfw.
-
-* ### Another Reminder
-  It's just my reminder for filling the attendance log on my online class. <br>
-  It's janky.
-  
-* ### Retired Music Command
-  Because there's too many error. <br>
-  Also this is just me trying to learn how to make a music bot by following tutorial.
   
 
 ## Author
