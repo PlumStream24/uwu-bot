@@ -175,6 +175,7 @@ client.on('ready', () => {
 			let day = sched.numToDay[numday];
 			let idx;
 			for (let i = 0; i < sched[day].length; i++) {
+				console.log(sched[day][i].startTime, hour, sched[day][i].endTime);
 				if (sched[day][i].startTime <= hour && hour < sched[day][i].endTime) {
 					idx = i;
 					break;
@@ -182,7 +183,6 @@ client.on('ready', () => {
 					idx = null;
 					break;
 				}
-				console.log(sched[day][i].startTime, hour, sched[day][i].endTime);
 			}
 			if (idx != null) {
 				reminderEmbed.setTitle(`Absen for ${sched[day][idx].code} - ${sched[day][idx].subj}`)
