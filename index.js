@@ -175,13 +175,11 @@ client.on('ready', () => {
 			let day = sched.numToDay[numday];
 			let idx;
 			for (let i = 0; i < sched[day].length; i++) {
-				console.log(sched[day][i].startTime, hour, sched[day][i].endTime);
 				if (sched[day][i].startTime <= hour && hour < sched[day][i].endTime) {
 					idx = i;
 					break;
 				} else {
 					idx = null;
-					break;
 				}
 			}
 			if (idx != null) {
@@ -192,7 +190,7 @@ client.on('ready', () => {
 			}
 			
 		}
-	}, 1000 * 60 * 1)
+	}, 1000 * 60 * 50)
 })
 
 // danbooru command *retired*
