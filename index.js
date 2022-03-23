@@ -9,7 +9,6 @@ const Danbooru = require('danbooru');
 
 client.once('ready', () => {
 	console.log('Ready!');
-	client.user.setActivity('ELDEN RING',{type : 'PLAYING'});
 });
 
 
@@ -183,6 +182,7 @@ client.on('ready', () => {
 					idx = null;
 					break;
 				}
+				console.log(sched[day][i].startTime, hour, sched[day][i].endTime);
 			}
 			if (idx != null) {
 				reminderEmbed.setTitle(`Absen for ${sched[day][idx].code} - ${sched[day][idx].subj}`)
@@ -192,7 +192,7 @@ client.on('ready', () => {
 			}
 			
 		}
-	}, 1000 * 60 * 40)
+	}, 1000 * 60 * 1)
 })
 
 // danbooru command *retired*
