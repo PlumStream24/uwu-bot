@@ -2,6 +2,7 @@ const Discord = require('discord.js');
 const sched = require('./sched.json');
 const {prefix, token, userID, guildID, channelID, danbooruAPI} = require('./config.json');
 const client = new Discord.Client({ intents: ["GUILDS", "GUILD_MESSAGES"] });
+let reminderOn = false;
 
 /* Retired commands
 const Danbooru = require('danbooru');
@@ -160,6 +161,7 @@ client.on('messageCreate', message =>
 // Reminder
 client.on('ready', () => {
 	let guild = client.guilds.cache.get(guildID);
+	if (!reminderOn) return;
 
 	setInterval(function() {
 		let time = new Date();
@@ -191,6 +193,11 @@ client.on('ready', () => {
 			
 		}
 	}, 1000 * 60 * 50)
+})
+
+// Remove this later
+client.on('ready', () => {
+	guild.channels.cache.get('601751285896708096').send({content: `Reminder that sul hasn't paid me back for MoM ticket`})
 })
 
 // danbooru command *retired*
