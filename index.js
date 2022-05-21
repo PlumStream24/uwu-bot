@@ -197,6 +197,7 @@ client.on('ready', () => {
 
 // Remove this later
 client.on('ready', () => {
+	let guild = client.guilds.cache.get(guildID);
 	guild.channels.cache.get('601751285896708096').send({content: `Reminder that sul hasn't paid me back for MoM ticket`})
 })
 
